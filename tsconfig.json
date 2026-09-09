@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "lib": ["ES2021", "DOM"],
+    "types": ["node"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["tests", "page-object-models", "playwright.config.ts"]
+}
