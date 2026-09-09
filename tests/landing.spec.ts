@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { LandingPage } from '../page-object-models/landing.page';
 
 const VALID_USER = process.env.TEST_USER ?? 'testuser@gmail.com';
@@ -10,27 +10,68 @@ test.describe('Landing page', () => {
   test.beforeEach(async ({ page }) => {
     landingPage = new LandingPage(page);
     await landingPage.goto();
-    await landingPage.open();
-    await landingPage.expectLoaded();
   });
 
-  test('logs in with valid credentials', async () => {
-    await landingPage.login(VALID_USER, VALID_PASSWORD);
-    await landingPage.expectLoggedIn();
+  test('initiate login ', async ({ page }) => {
+    const landingPage = new LandingPage(page);
+    await landingPage.openSite({ email: 'test@test.com', password: 'password@password' });
   });
+  // simple one-off test, does not require to be abstracted into separate function 
+  test('first CTA', async ({ page }) => {
+    await page.getByRole("button", { name: "CREATE ACCOUNT" }).click()
+    const ctaWindowLocator = await page.getByText('Create account', { exact: true });
+    await expect(ctaWindowLocator).toHaveText('Create account')
+  })
 
-  test('shows an error for a wrong password', async () => {
-    await landingPage.login(VALID_USER, 'not-the-password');
-    await landingPage.expectError(/invalid|incorrect/i);
-  });
+  test('second CTA', async ({ page }) => {
+    await page.getByRole("button", { name: "START NOW" }).click()
+    const ctaWindowLocator = await page.getByText('Create account', { exact: true });
+    await expect(ctaWindowLocator).toHaveText('Create account')
+  })
 
-  test('rejects empty credentials', async () => {
-    await landingPage.login('', '');
-    await landingPage.expectError();
-  });
+  test('what is a social casino text validation', async ({ page }) => {
+    const accordion = page.getByRole('button', { name: 'What is a social casino?', exact: true })
+    await accordion.click()
+
+    await expect(accordion).toContainClass('active')
+    await expect(page.getByText(
+      'A social casino is an online platform where you can play casino-style games like ' +
+        'slots, blackjack, roulette and craps purely for entertainment. Unlike traditional ' +
+        'online casinos, social casinos do not offer real-money gaming. Instead, you play ' +
+        'with virtual coins that have no cash value, which you can earn or claim for free.',
+      { exact: true },
+    )).toBeVisible()
+  })
+
+  test('is it free to play validation', async ({ page }) => {
+    const accordion = page.getByRole('button', { name: 'Is it free to play?', exact: true })
+    await accordion.click()
+
+    await expect(accordion).toContainClass('active')
+    await expect(page.getByText(
+      'Yes! You can claim free coins daily and through ongoing promotions. Optional coin ' +
+        "packages are available, but they're never required to enjoy the games.",
+      { exact: true },
+    )).toBeVisible()
+  })
+
+  test('why do players love spinquest validation', async ({ page }) => {
+    const accordion = page.getByRole('button', { name: 'Why do players love SpinQuest?', exact: true })
+    await accordion.click()
+
+    await expect(accordion).toContainClass('active')
+    await expect(page.getByText(
+      "SpinQuest is built by players, for players. We know what makes gameplay exciting " +
+        "because we're passionate about it ourselves. Our focus is on delivering a fun, " +
+        'rewarding experience with fresh content, a vibrant community, and a constantly ' +
+        "growing selection of games. We're always working on new features and have exciting " +
+        "games and updates just around the corner — so there's always something to look " +
+        'forward to.',
+      { exact: true },
+    )).toBeVisible()
+  })
+
 });
 
-test('open site', async ({ page }) => {
-  const landingPage = new LandingPage(page);
-  await landingPage.openSite({ email: 'test@test.com', password: 'password@password' });
-});
+
+

@@ -31,7 +31,7 @@ export class LandingPage {
   }
 
   async goto() {
-    await this.page.goto('/');
+    await this.page.goto("https://spinquest.com/");
   }
 
   /** Open the login form from the home page. */
@@ -66,9 +66,6 @@ export class LandingPage {
    */
   async openSite(options: OpenSiteOptions) {
     const { email, password, url = LandingPage.SITE_URL, submit = true } = options;
-
-    await this.page.goto(url);
-    await this.page.waitForLoadState();
 
     await this.open();
     await this.usernameInput.fill(email);
