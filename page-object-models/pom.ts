@@ -4,14 +4,17 @@ import { LandingPage } from './landing.page';
 import { GamePage } from './game.page';
 
 /**
- * Aggregate entry point for all page object models.
- * Instantiate once per test and access each page through it.
+ * Page Object Manager.
  *
- *   const pom = new POM(page);
- *   await pom.home.goto();
- *   await pom.landing.login('user', 'pass');
+ * Instantiating this single class instantiates every page object at once,
+ * all sharing the same Playwright `Page`. Access each page through the manager:
+ *
+ *   const pom = new PageObjectManager(page);
+ *   await pom.landing.goto();
+ *   await pom.landing.openSite({ email, password });
+ *   await pom.game.spinButton.click();
  */
-export class POM {
+export class PageObjectManager {
   readonly page: Page;
   readonly home: HomePage;
   readonly landing: LandingPage;
@@ -25,4 +28,6 @@ export class POM {
   }
 }
 
+/** Backwards-compatible aliases. */
+export { PageObjectManager as POM, PageObjectManager as POManager };
 export { HomePage, LandingPage, GamePage };

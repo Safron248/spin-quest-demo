@@ -1,6 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/pom.fixture';
 import { faker } from '@faker-js/faker';
-import { LandingPage } from '../page-object-models/landing.page';
 
 const validUser = process.env.TEST_USER ?? 'testuser@gmail.com';
 const validPassword = process.env.TEST_PASSWORD ?? 'testpassword';
@@ -15,17 +14,14 @@ const newAccount = {
 };
 
 test.describe('Landing page', () => {
-  let landingPage: LandingPage;
-
-  test.beforeEach(async ({ page }) => {
-    landingPage = new LandingPage(page);
-    await landingPage.goto();
+  test.beforeEach(async ({ pom }) => {
+    await pom.landing.goto();
   });
 
-  test('initiate login', async () => {
-    await landingPage.openSite({ email: validUser, password: validPassword });
+  test('initiate login', async ({ pom }) => {
+    await pom.landing.openSite({ email: validUser, password: validPassword });
   });
-  // simple one-off test, does not require to be abstracted into separate function
+  // simple one-off tests, does not require to be abstracted into separate function
   test('first CTA', async ({ page }) => {
     await page.getByRole('button', { name: 'CREATE ACCOUNT' }).click()
     await expect(page.getByText('Create account', { exact: true })).toBeVisible()
@@ -78,13 +74,13 @@ test.describe('Landing page', () => {
     )).toBeVisible()
   })
   // parametrized reusable flows
-  test('sign up flow', async () => {
-    await landingPage.signUp(newAccount);
+  test('sign up flow', async ({ pom }) => {
+    await pom.landing.signUp(newAccount);
   });
 
-  test('registration details', async () => {
-    await landingPage.signUp(newAccount);
-    await landingPage.fillRegistrationDetails({
+  test('registration details', async ({ pom }) => {
+    await pom.landing.signUp(newAccount);
+    await pom.landing.fillRegistrationDetails({
       firstName,
       lastName,
       state: 'FLORIDA',
