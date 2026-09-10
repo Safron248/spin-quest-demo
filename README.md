@@ -28,7 +28,7 @@ fixtures/
 
 tests/
   landing.spec.ts          current tests - consume the `pom` fixture
-  landing.raw.spec.ts      legacy artifact, kept for demo purposes only
+  landing.legacy.spec.ts   legacy artifact, kept for demo purposes only
 
 playwright.config.ts       projects (chromium / firefox / webkit), reporter, trace
 ```
@@ -154,8 +154,8 @@ wiring on the test's part.
 | A test's intent | the `*.spec.ts` file | that test only |
 
 Test files carry no setup boilerplate, no `new`, and no duplicated locator
-strings, so they read as a description of behaviour. `landing.raw.spec.ts` is
-kept as a before/after reference showing the manual `new LandingPage(page)`
+strings, so they read as a description of behaviour. `landing.legacy.spec.ts`
+is kept as a before/after reference showing the manual `new LandingPage(page)`
 style that these layers replaced.
 
 ## Adding a new page object
