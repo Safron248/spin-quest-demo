@@ -42,7 +42,6 @@ export class LandingPage {
   readonly passwordInput: Locator;
   readonly submitButton: Locator;
   readonly errorMessage: Locator;
-  readonly turnstileFrame: Locator;
 
   readonly signUpButton: Locator;
   readonly signUpEmailInput: Locator;
@@ -64,7 +63,6 @@ export class LandingPage {
     this.passwordInput = page.getByRole('textbox', { name: 'Password' });
     this.submitButton = page.locator('form').getByRole('button', { name: 'Login' });
     this.errorMessage = page.getByRole('alert');
-    this.turnstileFrame = page.locator('iframe[src*="challenges.cloudflare.com"]');
 
     this.signUpButton = page.getByRole('button', { name: 'SIGN UP' });
     this.signUpEmailInput = page.getByRole('textbox', { name: 'Enter email' });
@@ -90,17 +88,9 @@ export class LandingPage {
     await expect(this.usernameInput).toBeVisible();
   }
 
-  /** Solve the Cloudflare Turnstile checkbox challenge, if one is shown. */
-  async solveTurnstile() {
-    if (await this.turnstileFrame.isVisible().catch(() => false)) {
-      await this.turnstileFrame.contentFrame().locator('body').click();
-    }
-  }
-
   async login(username: string, password: string) {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
-    await this.solveTurnstile();
     await this.submitButton.click();
   }
 
@@ -112,16 +102,15 @@ export class LandingPage {
 
   /**
    * Parametrized "open site" flow: navigate to the site, open the login form,
-   * fill the given credentials, solve Turnstile, and (optionally) submit.
+   * fill the given credentials, and (optionally) submit.
    */
   async openSite(options: OpenSiteOptions) {
-    const { email, password, url = LandingPage.SITE_URL, submit = true } = options;
+    const { email, password, submit = true } = options;
     await this.page.waitForLoadState();
 
     await this.open();
     await this.usernameInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.solveTurnstile();
 
     if (submit) {
       await this.submitButton.click();
@@ -130,7 +119,7 @@ export class LandingPage {
 
   /**
    * Parametrized sign-up flow: open the SIGN UP form, fill the given details,
-   * solve Turnstile, and (optionally) submit with CONTINUE.
+   * and (optionally) submit with CONTINUE.
    */
   async signUp(options: SignUpOptions) {
     const { email, username, password, confirmPassword = password, submit = true } = options;
@@ -140,7 +129,6 @@ export class LandingPage {
     await this.signUpUsernameInput.fill(username);
     await this.signUpPasswordInput.fill(password);
     await this.signUpConfirmPasswordInput.fill(confirmPassword);
-    await this.solveTurnstile();
 
     if (submit) {
       await this.continueButton.click();
